@@ -1,0 +1,56 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>abae045c-45c3-425c-bc1d-d8bcbb2f1972</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>core\main.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>Qualification Work</Name>
+    <RootNamespace>Qualification Work</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="core\invoice.py" />
+    <Compile Include="core\main.py" />
+    <Compile Include="core\__init__.py" />
+    <Compile Include="db\db.py" />
+    <Compile Include="db\utils.py" />
+    <Compile Include="db\__init__.py" />
+    <Compile Include="ecom\db.py" />
+    <Compile Include="ecom\utils.py" />
+    <Compile Include="ecom\__init__.py" />
+    <Compile Include="xmlgen\generator.py" />
+    <Compile Include="xmlgen\template.py" />
+    <Compile Include="xmlgen\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="core\" />
+    <Folder Include="db\" />
+    <Folder Include="ecom\" />
+    <Folder Include="xmlgen\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="db.ini" />
+    <Content Include="ecom_db.ini" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+  <!-- Uncomment the CoreCompile target to enable the Build command in
+       Visual Studio and specify your pre- and post-build commands in
+       the BeforeBuild and AfterBuild targets below. -->
+  <!--<Target Name="CoreCompile" />-->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+</Project>
