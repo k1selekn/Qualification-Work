@@ -47,7 +47,7 @@ class Database:
             parts.append("Trusted_Connection=yes")
         else:
             if not (uid and pwd):
-                raise ValueError("Для SQL Authentication нужны uid и pwd")
+                raise ValueError("Р”Р»СЏ SQL Authentication РЅСѓР¶РЅС‹ uid Рё pwd")
             parts.extend([f"UID={uid}", f"PWD={pwd}"])
 
         parts.append("TrustServerCertificate=yes")

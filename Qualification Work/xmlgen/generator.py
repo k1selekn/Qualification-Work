@@ -27,37 +27,37 @@ def generate_invoice_xml(
     root = get_template_root(single=use_single)
 
     now = datetime.now()
-    doc = root.find('Документ')
-    doc.set('ВремИнфПр', now.strftime('%H.%M.%S'))
-    doc.set('ДатаИнфПр', now.strftime('%d.%m.%y'))
+    doc = root.find('Р”РѕРєСѓРјРµРЅС‚')
+    doc.set('Р’СЂРµРјРРЅС„РџСЂ', now.strftime('%H.%M.%S'))
+    doc.set('Р”Р°С‚Р°РРЅС„РџСЂ', now.strftime('%d.%m.%y'))
 
     first = invoice_lines[0]
-    scf = doc.find('СвСчФакт')
-    scf.set('НомерСчФ', first.document_no)
-    scf.set('ДатаСчФ', first.doc_date.strftime('%d.%m.%Y'))
+    scf = doc.find('РЎРІРЎС‡Р¤Р°РєС‚')
+    scf.set('РќРѕРјРµСЂРЎС‡Р¤', first.document_no)
+    scf.set('Р”Р°С‚Р°РЎС‡Р¤', first.doc_date.strftime('%d.%m.%Y'))
 
-    prd = scf.find('СвПРД')
-    prd.set('НомерПРД', first.reference)
-    prd.set('ДатаПРД', first.doc_date.strftime('%d.%m.%Y'))
+    prd = scf.find('РЎРІРџР Р”')
+    prd.set('РќРѕРјРµСЂРџР Р”', first.reference)
+    prd.set('Р”Р°С‚Р°РџР Р”', first.doc_date.strftime('%d.%m.%Y'))
 
     with Database() as db:
         curr_name = get_currencyName_from_db(db, first.lcurr) or first.lcurr
-    elt_curr = scf.find('ДопСвФХЖ1')
-    elt_curr.set('НаимОКВ', curr_name)
+    elt_curr = scf.find('Р”РѕРїРЎРІР¤РҐР–1')
+    elt_curr.set('РќР°РёРјРћРљР’', curr_name)
 
     ecom = fetch_ecom_data(first.account)
     if ecom:
-        buyer = scf.find('.//СвПокуп/ИдСв/СвЮЛУч')
-        buyer.set('НаимОрг', ecom.full_name)
-        buyer.set('ИННЮЛ', ecom.stcd1)
-        buyer.set('КПП', ecom.stcd2)
-        addr = scf.find('.//СвПокуп/Адрес/АдрИнф')
-        addr.set('АдрТекст', ecom.address_text)
+        buyer = scf.find('.//РЎРІРџРѕРєСѓРї/РРґРЎРІ/РЎРІР®Р›РЈС‡')
+        buyer.set('РќР°РёРјРћСЂРі', ecom.full_name)
+        buyer.set('РРќРќР®Р›', ecom.stcd1)
+        buyer.set('РљРџРџ', ecom.stcd2)
+        addr = scf.find('.//РЎРІРџРѕРєСѓРї/РђРґСЂРµСЃ/РђРґСЂРРЅС„')
+        addr.set('РђРґСЂРўРµРєСЃС‚', ecom.address_text)
 
-    tab = root.find('.//ТаблСчФакт')
-    proto = tab.find('СведТов')
+    tab = root.find('.//РўР°Р±Р»РЎС‡Р¤Р°РєС‚')
+    proto = tab.find('РЎРІРµРґРўРѕРІ')
     for child in list(tab):
-        if child.tag in ('СведТов', 'ВсегоОпл'):
+        if child.tag in ('РЎРІРµРґРўРѕРІ', 'Р’СЃРµРіРѕРћРїР»'):
             tab.remove(child)
 
     total_amt = 0.0
@@ -66,16 +66,16 @@ def generate_invoice_xml(
         for idx, inv in enumerate(invoice_lines, start=1):
             amount = abs(inv.amt_loc_cur)
             item = copy.deepcopy(proto)
-            item.set('НомСтр', str(idx))
-            item.set('НаимТов', inv.text)
+            item.set('РќРѕРјРЎС‚СЂ', str(idx))
+            item.set('РќР°РёРјРўРѕРІ', inv.text)
 
             tax_val = get_taxValue_from_db(db, inv.tx) or 0.0
             nal_rate = tax_val / (100 + tax_val) if tax_val else 0.0
-            item.set('НалСт', f"{nal_rate:.6f}")
-            item.set('СтТовУчНал', f"{amount:.2f}")
+            item.set('РќР°Р»РЎС‚', f"{nal_rate:.6f}")
+            item.set('РЎС‚РўРѕРІРЈС‡РќР°Р»', f"{amount:.2f}")
 
             sum_tax = amount * nal_rate
-            node_sum = item.find('СумНал/СумНал')
+            node_sum = item.find('РЎСѓРјРќР°Р»/РЎСѓРјРќР°Р»')
             if node_sum is not None:
                 node_sum.text = f"{sum_tax:.2f}"
 
@@ -83,9 +83,9 @@ def generate_invoice_xml(
             total_tax += sum_tax
             tab.append(item)
 
-    totals = ET.SubElement(tab, 'ВсегоОпл', {'СтТовУчНалВсего': f"{total_amt:.2f}"})
-    sum_cont = ET.SubElement(totals, 'СумНалВсего')
-    sum_tag = ET.SubElement(sum_cont, 'СумНал')
+    totals = ET.SubElement(tab, 'Р’СЃРµРіРѕРћРїР»', {'РЎС‚РўРѕРІРЈС‡РќР°Р»Р’СЃРµРіРѕ': f"{total_amt:.2f}"})
+    sum_cont = ET.SubElement(totals, 'РЎСѓРјРќР°Р»Р’СЃРµРіРѕ')
+    sum_tag = ET.SubElement(sum_cont, 'РЎСѓРјРќР°Р»')
     sum_tag.text = f"{total_tax:.2f}"
 
     ET.indent(root, space="  ")
@@ -117,4 +117,4 @@ def generate_from_txt(
         groups.setdefault(ln.document_no, []).append(ln)
     for group in groups.values():
         generate_invoice_xml(group, output_dir)
-    print(f"Сгенерировано {len(groups)} XML-файлов в {output_dir}")
+    print(f"РЎРіРµРЅРµСЂРёСЂРѕРІР°РЅРѕ {len(groups)} XML-С„Р°Р№Р»РѕРІ РІ {output_dir}")

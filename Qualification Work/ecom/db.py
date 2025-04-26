@@ -47,7 +47,7 @@ class ReadOnlyDatabase:
             parts.append("Trusted_Connection=yes")
         else:
             if not (uid and pwd):
-                raise ValueError("Для SQL Authentication нужны uid и pwd")
+                raise ValueError("Р”Р»СЏ SQL Authentication РЅСѓР¶РЅС‹ uid Рё pwd")
             parts.extend([f"UID={uid}", f"PWD={pwd}"])
 
         parts.append("TrustServerCertificate=yes")
@@ -57,7 +57,7 @@ class ReadOnlyDatabase:
 
     def query(self, sql: str, params: tuple = None) -> list[dict]:
         """
-        Выполнить SELECT-запрос и вернуть список словарей: [{col: value, …}, …]
+        Р’С‹РїРѕР»РЅРёС‚СЊ SELECT-Р·Р°РїСЂРѕСЃ Рё РІРµСЂРЅСѓС‚СЊ СЃРїРёСЃРѕРє СЃР»РѕРІР°СЂРµР№: [{col: value, вЂ¦}, вЂ¦]
         """
         cur = self._conn.cursor()
         cur.execute(sql, params or ())
@@ -66,12 +66,12 @@ class ReadOnlyDatabase:
 
     def to_df(self, sql: str, params: tuple = None) -> pd.DataFrame:
         """
-        Выполнить SELECT и сразу получить pandas.DataFrame
+        Р’С‹РїРѕР»РЅРёС‚СЊ SELECT Рё СЃСЂР°Р·Сѓ РїРѕР»СѓС‡РёС‚СЊ pandas.DataFrame
         """
         return pd.read_sql_query(sql, self._conn, params=params)
 
     def close(self):
-        """Закрыть соединение."""
+        """Р—Р°РєСЂС‹С‚СЊ СЃРѕРµРґРёРЅРµРЅРёРµ."""
         if self._conn:
             self._conn.close()
             self._conn = None
