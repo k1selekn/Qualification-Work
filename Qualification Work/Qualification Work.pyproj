@@ -39,6 +39,14 @@
     <Compile Include="ecom\__init__.py" />
     <Compile Include="scripts\runner.py" />
     <Compile Include="scripts\scheduler.py" />
+    <Compile Include="tests\conftest.py" />
+    <Compile Include="tests\test_core\test_invoice.py" />
+    <Compile Include="tests\test_core\test_main.py" />
+    <Compile Include="tests\test_db\test_db.py" />
+    <Compile Include="tests\test_db\test_utils.py" />
+    <Compile Include="tests\test_ecom\test_utils.py" />
+    <Compile Include="tests\test_xmlgen\test_template.py" />
+    <Compile Include="tests\test_xmlgen\tets_generator.py" />
     <Compile Include="xmlgen\generator.py" />
     <Compile Include="xmlgen\template.py" />
     <Compile Include="xmlgen\__init__.py" />
@@ -47,12 +55,18 @@
     <Folder Include="core\" />
     <Folder Include="db\" />
     <Folder Include="ecom\" />
+    <Folder Include="tests\" />
     <Folder Include="scripts\" />
+    <Folder Include="tests\test_xmlgen\" />
+    <Folder Include="tests\test_ecom\" />
+    <Folder Include="tests\test_db\" />
+    <Folder Include="tests\test_core\" />
     <Folder Include="xmlgen\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="db.ini" />
     <Content Include="ecom_db.ini" />
+    <Content Include="pytest.ini" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
