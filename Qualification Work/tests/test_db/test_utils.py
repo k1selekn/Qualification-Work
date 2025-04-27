@@ -1,7 +1,7 @@
 # tests/test_db/test_utils.py
 import pytest
 from db.utils import replace_accounts_from_db
-from core.invoice import Invoice, InvoiceItem
+from core.invoice import Invoice
 from datetime import datetime
 
 class DummyDB:
