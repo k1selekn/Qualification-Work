@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>abae045c-45c3-425c-bc1d-d8bcbb2f1972</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>core\main.py</StartupFile>
+    <StartupFile>scripts\scheduler.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -12,7 +12,8 @@
     <Name>Qualification Work</Name>
     <RootNamespace>Qualification Work</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>"C:\Users\dns\OneDrive\Рабочий стол\Институт\ВКР\ВКР данные\FBL5N" "C:\Users\dns\OneDrive\Рабочий стол\Институт\ВКР\ВКР данные\XML"</CommandLineArguments>
+    <CommandLineArguments>
+    </CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <TestFramework>pytest</TestFramework>
     <UnitTestPattern>test*.py</UnitTestPattern>
@@ -36,6 +37,8 @@
     <Compile Include="ecom\db.py" />
     <Compile Include="ecom\utils.py" />
     <Compile Include="ecom\__init__.py" />
+    <Compile Include="scripts\runner.py" />
+    <Compile Include="scripts\scheduler.py" />
     <Compile Include="xmlgen\generator.py" />
     <Compile Include="xmlgen\template.py" />
     <Compile Include="xmlgen\__init__.py" />
@@ -44,6 +47,7 @@
     <Folder Include="core\" />
     <Folder Include="db\" />
     <Folder Include="ecom\" />
+    <Folder Include="scripts\" />
     <Folder Include="xmlgen\" />
   </ItemGroup>
   <ItemGroup>
