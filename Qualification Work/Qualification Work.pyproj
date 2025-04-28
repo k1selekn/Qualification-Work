@@ -28,6 +28,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="api.py" />
     <Compile Include="core\invoice.py" />
     <Compile Include="core\main.py" />
     <Compile Include="core\__init__.py" />
@@ -40,6 +41,7 @@
     <Compile Include="scripts\runner.py" />
     <Compile Include="scripts\scheduler.py" />
     <Compile Include="tests\conftest.py" />
+    <Compile Include="tests\test_api\test_api.py" />
     <Compile Include="tests\test_core\test_invoice.py" />
     <Compile Include="tests\test_core\test_main.py" />
     <Compile Include="tests\test_db\test_db.py" />
@@ -57,6 +59,7 @@
     <Folder Include="ecom\" />
     <Folder Include="tests\" />
     <Folder Include="scripts\" />
+    <Folder Include="tests\test_api\" />
     <Folder Include="tests\test_xmlgen\" />
     <Folder Include="tests\test_ecom\" />
     <Folder Include="tests\test_db\" />
