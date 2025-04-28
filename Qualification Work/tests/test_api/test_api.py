@@ -1,70 +1,64 @@
-# Qualification Work/api.py
+# tests/test_api/test_api.py
 import io
 import zipfile
-from pathlib import Path
-from typing import List, Optional
+import pytest
+from fastapi.testclient import TestClient
 
-from fastapi import Depends, FastAPI, Header, HTTPException, status
-from fastapi.responses import FileResponse, StreamingResponse
+import api
 
-app = FastAPI(
-    title="XML Provider",
-    description="Отдаёт сгенерированные XML-файлы",
-    version="0.2",
-)
+@pytest.fixture
 
-XML_DIR = Path(__file__).parent / "data" / "out"
-API_KEYS = {"supersecret123", "another-key-456"}
+def client(tmp_path, monkeypatch):
+    xml_dir = tmp_path / "out"
+    xml_dir.mkdir()
+    (xml_dir / "a.xml").write_text("<root>A</root>")
+    (xml_dir / "b.xml").write_text("<root>B</root>")
 
-def verify_api_key(x_api_key: Optional[str] = Header(None, alias="X-API-Key")):
-    if not x_api_key or x_api_key not in API_KEYS:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or missing API Key",
-            headers={"WWW-Authenticate": "API Key"},
-        )
+    monkeypatch.setattr(api, "XML_DIR", xml_dir)
+    monkeypatch.setattr(api, "API_KEYS", {"testkey"})
 
-@app.get(
-    "/files/",
-    summary="Список всех XML",
-    dependencies=[Depends(verify_api_key)]
-)
-async def list_xml() -> List[str]:
-    return sorted(p.name for p in XML_DIR.glob("*.xml"))
+    return TestClient(api.app)
 
-@app.get(
-    "/files/{name}",
-    summary="Скачать XML по имени",
-    dependencies=[Depends(verify_api_key)]
-)
-async def get_xml(name: str):
-    file_path = XML_DIR / name
-    if not file_path.exists() or file_path.suffix.lower() != ".xml":
-        raise HTTPException(status_code=404, detail="File not found")
-    return FileResponse(
-        path=str(file_path),
-        media_type="application/xml",
-        filename=name,
-    )
 
-@app.get(
-    "/files/download_all",
-    summary="Скачать все XML сразу в ZIP",
-    dependencies=[Depends(verify_api_key)]
-)
-async def download_all():
-    xml_files = list(XML_DIR.glob("*.xml"))
-    if not xml_files:
-        raise HTTPException(status_code=404, detail="No XML files available")
+def test_list_xml_requires_api_key(client):
+    r = client.get("/files/")
+    assert r.status_code == 401
 
-    buf = io.BytesIO()
-    with zipfile.ZipFile(buf, mode="w", compression=zipfile.ZIP_DEFLATED) as z:
-        for p in xml_files:
-            z.write(p, arcname=p.name)
-    buf.seek(0)
 
-    return StreamingResponse(
-        buf,
-        media_type="application/zip",
-        headers={"Content-Disposition": 'attachment; filename="all_xml.zip"'}
-    )
+def test_list_xml_success(client):
+    r = client.get("/files/", headers={"X-API-Key": "testkey"})
+    assert r.status_code == 200
+    assert r.json() == ["a.xml", "b.xml"]
+
+
+def test_get_xml_success(client):
+    r = client.get("/files/a.xml", headers={"X-API-Key": "testkey"})
+    assert r.status_code == 200
+    assert r.text == "<root>A</root>"
+    assert r.headers["content-type"].startswith("application/xml")
+
+
+def test_get_xml_not_found(client):
+    r = client.get("/files/nonexistent.xml", headers={"X-API-Key": "testkey"})
+    assert r.status_code == 404
+
+
+def test_download_all(client):
+    r = client.get("/files/download_all", headers={"X-API-Key": "testkey"})
+    assert r.status_code == 200
+    assert r.headers["content-type"].startswith("application/zip")
+
+    buf = io.BytesIO(r.content)
+    with zipfile.ZipFile(buf) as z:
+        names = sorted(z.namelist())
+        assert names == ["a.xml", "b.xml"]
+        assert z.read("a.xml") == b"<root>A</root>"
+        assert z.read("b.xml") == b"<root>B</root>"
+
+
+def test_download_all_no_files(client, tmp_path, monkeypatch):
+    empty = tmp_path / "empty"
+    empty.mkdir()
+    monkeypatch.setattr(api, "XML_DIR", empty)
+    r = client.get("/files/download_all", headers={"X-API-Key": "testkey"})
+    assert r.status_code == 404
