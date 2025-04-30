@@ -6,15 +6,14 @@ from datetime import datetime
 from pathlib import Path
 import schedule
 from core.main import process_folder
+from config import load_config
 
-BASE_DIR = Path(__file__).parent.parent
-INPUT_DIR = BASE_DIR / "data" / "in"
-OUTPUT_DIR = BASE_DIR / "data" / "out"
-LOG_DIR = BASE_DIR / "logs"
-
-for folder in (INPUT_DIR, OUTPUT_DIR, LOG_DIR):
-    folder.mkdir(parents=True, exist_ok=True)
-
+cfg = load_config()
+INPUT_DIR  = Path(cfg.paths.input_folder)
+OUTPUT_DIR = Path(cfg.paths.output_folder)
+LOG_DIR    = Path(cfg.paths.logs_folder)
+for d in (INPUT_DIR, OUTPUT_DIR, LOG_DIR):
+    d.mkdir(parents=True, exist_ok=True)
 LOG_PATH = LOG_DIR / "scheduler.log"
 
 logging.basicConfig(

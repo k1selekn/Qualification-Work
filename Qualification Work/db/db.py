@@ -1,22 +1,21 @@
 import os
 import pyodbc
-from configparser import ConfigParser
+from config import load_config
 
-cfg = ConfigParser()
-cfg.read(os.getenv('DB_CONFIG_FILE', 'db.ini'))
-db_conf = cfg['database']
+cfg = load_config()
+db_conf = cfg.db
 
 class Database:
     default_params = {
-        'server'     : db_conf.get('server'),
-        'database'   : db_conf.get('database'),
-        'driver'     : db_conf.get('driver'),
-        'instance'   : db_conf.get('instance') or None,
-        'port'       : db_conf.getint('port'),
-        'trusted'    : db_conf.getboolean('trusted'),
-        'uid'        : db_conf.get('uid') or None,
-        'pwd'        : db_conf.get('pwd') or None,
-        'autocommit' : db_conf.getboolean('autocommit'),
+        'server'     : db_conf.server,
+        'database'   : db_conf.database,
+        'driver'     : db_conf.driver,
+        'instance'   : db_conf.instance or None,
+        'port'       : db_conf.port,
+        'trusted'    : db_conf.trusted,
+        'uid'        : db_conf.uid or None,
+        'pwd'        : db_conf.pwd or None,
+        'autocommit' : db_conf.autocommit,
     }
 
     def __init__(self, **kwargs):

@@ -1,23 +1,22 @@
 import os
 import pyodbc
-from configparser import ConfigParser
 import pandas as pd
+from config import load_config
 
-cfg = ConfigParser()
-cfg.read(os.getenv('DB_CONFIG_FILE', 'ecom_db.ini'))
-db_conf = cfg['database']
+cfg = load_config()
+ecom_conf = cfg.ecom_db
 
 class ReadOnlyDatabase:
     default_params = {
-        'server'     : db_conf.get('server'),
-        'database'   : db_conf.get('database'),
-        'driver'     : db_conf.get('driver'),
-        'instance'   : db_conf.get('instance') or None,
-        'port'       : db_conf.getint('port'),
-        'trusted'    : db_conf.getboolean('trusted'),
-        'uid'        : db_conf.get('uid') or None,
-        'pwd'        : db_conf.get('pwd') or None,
-        'autocommit' : True,
+        'server'     : ecom_conf.server,
+        'database'   : ecom_conf.database,
+        'driver'     : ecom_conf.driver,
+        'instance'   : ecom_conf.instance or None,
+        'port'       : ecom_conf.port,
+        'trusted'    : ecom_conf.trusted,
+        'uid'        : ecom_conf.uid or None,
+        'pwd'        : ecom_conf.pwd or None,
+        'autocommit' : ecom_conf.autocommit,
     }
 
     def __init__(self, **overrides):
@@ -56,22 +55,15 @@ class ReadOnlyDatabase:
         self._conn = pyodbc.connect(self._conn_str, autocommit=autocommit)
 
     def query(self, sql: str, params: tuple = None) -> list[dict]:
-        """
-        Выполнить SELECT-запрос и вернуть список словарей: [{col: value, …}, …]
-        """
         cur = self._conn.cursor()
         cur.execute(sql, params or ())
         cols = [col[0] for col in cur.description]
         return [dict(zip(cols, row)) for row in cur.fetchall()]
 
     def to_df(self, sql: str, params: tuple = None) -> pd.DataFrame:
-        """
-        Выполнить SELECT и сразу получить pandas.DataFrame
-        """
         return pd.read_sql_query(sql, self._conn, params=params)
 
     def close(self):
-        """Закрыть соединение."""
         if self._conn:
             self._conn.close()
             self._conn = None

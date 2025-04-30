@@ -1,0 +1,27 @@
+# config.yaml
+db:
+  server: "kiselek"
+  database: "FinalQW"
+  driver: "ODBC Driver 18 for SQL Server"
+  instance: ""
+  port: 1433
+  trusted: true
+  uid: ""
+  pwd: ""
+  autocommit: true
+
+ecom_db:
+  server: "kiselek"
+  database: "ECOM"
+  driver: "ODBC Driver 18 for SQL Server"
+  instance: ""
+  port: 1433
+  trusted: true
+  uid: ""
+  pwd: ""
+  autocommit: true
+
+paths:
+  input_folder: "data/in"
+  output_folder: "data/out"
+  logs_folder: "logs"

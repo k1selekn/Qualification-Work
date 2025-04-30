@@ -29,6 +29,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="api.py" />
+    <Compile Include="config.py" />
     <Compile Include="core\invoice.py" />
     <Compile Include="core\main.py" />
     <Compile Include="core\__init__.py" />
@@ -67,6 +68,7 @@
     <Folder Include="xmlgen\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="config.yaml" />
     <Content Include="db.ini" />
     <Content Include="ecom_db.ini" />
     <Content Include="pytest.ini" />
