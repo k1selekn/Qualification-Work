@@ -68,9 +68,6 @@
     <Folder Include="xmlgen\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="config.yaml" />
-    <Content Include="db.ini" />
-    <Content Include="ecom_db.ini" />
     <Content Include="pytest.ini" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />

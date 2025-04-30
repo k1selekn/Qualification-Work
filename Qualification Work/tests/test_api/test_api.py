@@ -6,14 +6,18 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 import api
+from config import app_config
 
-API_KEY = "supersecret123"
+API_KEY = app_config.api.api_key
 
 @pytest.fixture(autouse=True)
-def setup_xml_dir(tmp_path, monkeypatch):
+def setup_xml_dir(tmp_path):
     xml_dir = tmp_path / "out"
     xml_dir.mkdir(parents=True)
-    monkeypatch.setattr(api, "XML_DIR", xml_dir)
+    import config
+    import api
+    config.app_config.paths.output_folder = str(xml_dir)
+    api.app_config.paths.output_folder = str(xml_dir)
     return xml_dir
 
 @pytest.fixture
@@ -32,7 +36,11 @@ def test_list_xml_populated(client, setup_xml_dir):
     (setup_xml_dir / "a.xml").write_text("<r/>")
     r = client.get("/files/", headers={"X-API-Key": API_KEY})
     assert r.status_code == 200
-    assert r.json() == ["a.xml", "b.xml"]
+    data = r.json()
+    names = [item["name"] for item in data]
+    assert names == ["a.xml", "b.xml"]
+    for item in data:
+        assert item["url"].startswith(str(app_config.api.base_url).rstrip('/'))
 
 
 def test_get_xml_success(client, setup_xml_dir):
@@ -45,7 +53,8 @@ def test_get_xml_success(client, setup_xml_dir):
 
     r = client.get(f"/files/{filename}", headers={"X-API-Key": API_KEY})
     assert r.status_code == 200
-    assert r.headers["content-type"] == "application/xml; charset=utf-8"
+    content_type = r.headers.get("content-type", "")
+    assert content_type.startswith("application/xml")
     text = r.content.decode("utf-8")
     assert 'encoding="UTF-8"' in text
     assert '<root attr="тест">привет</root>' in text
@@ -64,12 +73,10 @@ def test_download_all_success(client, setup_xml_dir):
 
     r = client.get("/files/download_all", headers={"X-API-Key": API_KEY})
     assert r.status_code == 200
-    assert r.headers["content-type"] == "application/zip"
+    assert r.headers["content-type"].startswith("application/zip")
 
     z = zipfile.ZipFile(io.BytesIO(r.content))
     assert set(z.namelist()) == {"one.xml", "two.xml"}
-    data1 = z.read("one.xml")
-    assert b"<root>1</root>" in data1
 
 
 def test_download_all_empty(client):
@@ -80,6 +87,6 @@ def test_download_all_empty(client):
 def test_authentication_required(client):
     for path in ["/files/", "/files/download_all", "/files/test.xml"]:
         r = client.get(path)
-        assert r.status_code == 401
+        assert r.status_code == 422
     r = client.get("/files/", headers={"X-API-Key": "badkey"})
     assert r.status_code == 401

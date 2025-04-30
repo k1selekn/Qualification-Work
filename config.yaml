@@ -25,3 +25,7 @@ paths:
   input_folder: "data/in"
   output_folder: "data/out"
   logs_folder: "logs"
+
+api:
+  base_url: "http://localhost:8000"
+  api_key: "kiselek"

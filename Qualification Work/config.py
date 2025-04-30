@@ -1,6 +1,7 @@
+# config.py
 import os
 import yaml
-from pydantic import BaseModel, Field, field_validator, ValidationError
+from pydantic import BaseModel, Field, field_validator, HttpUrl
 
 
 def load_config(path: str = None) -> 'AppConfig':
@@ -51,7 +52,16 @@ class PathsConfig(BaseModel):
         return abs_path
 
 
+class APIConfig(BaseModel):
+    base_url: HttpUrl = Field(..., description="Базовый URL сервиса API")
+    api_key: str    = Field(..., description="Секретный ключ для доступа к API")
+
+
 class AppConfig(BaseModel):
     db: DBConfig
     ecom_db: DBConfig
     paths: PathsConfig
+    api: APIConfig
+
+
+app_config = load_config()

@@ -8,7 +8,6 @@ from datetime import datetime
 from core.invoice import parse_txt
 from xmlgen.generator import generate_invoice_xml
 
-
 def process_file(txt_file: Path, output_dir: Path):
     ts = datetime.now().strftime('%Y_%m_%d_%H-%M')
     log_path = txt_file.with_name(f"{txt_file.stem}_{ts}.log")

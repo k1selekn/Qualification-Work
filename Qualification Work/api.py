@@ -1,87 +1,94 @@
-# Qualification Work/api.py
-# http://localhost:8000/docs#/
-import re
+# api.py
+from fastapi import FastAPI, HTTPException, Depends, Header, Response
+from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.openapi.utils import get_openapi
+from pydantic import BaseModel, Field
+from typing import List
+import os
+import io
 import zipfile
-import tempfile
 from pathlib import Path
-from typing import List, Optional
 
-from fastapi import Depends, FastAPI, Header, HTTPException, status
-from fastapi.responses import FileResponse
-from fastapi.responses import Response
+from config import app_config
 
 app = FastAPI(
-    title="XML Provider",
-    description="Получение счет-фактур на аванс",
-    version="0.2",
+    title="Сервис XML счетов",
+    description="API для управления и получения сгенерированных XML счетов-фактур.",
+    version="1.0.0",
 )
 
-XML_DIR = Path(__file__).parent / "data" / "out"
-API_KEYS = {"supersecret123", "another-key-456"}
+def verify_api_key(x_api_key: str = Header(..., description="Ключ API для аутентификации")):
+    if x_api_key != app_config.api.api_key:
+        raise HTTPException(status_code=401, detail="Недействительный или отсутствующий API-ключ")
+    return x_api_key
 
-def verify_api_key(x_api_key: Optional[str] = Header(None, alias="X-API-Key")):
-    if not x_api_key or x_api_key not in API_KEYS:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid or missing API Key",
-            headers={"WWW-Authenticate": "API Key"},
-        )
+class FileInfo(BaseModel):
+    name: str = Field(..., description="Имя XML-файла счета")
+    url: str  = Field(..., description="URL для скачивания XML-файла")
 
 @app.get(
     "/files/",
-    summary="Список всех счет-фактур",
-    dependencies=[Depends(verify_api_key)]
+    response_model=List[FileInfo],
+    summary="Получить список XML-файлов счетов",
+    description="Возвращает список доступных XML-файлов счетов и их ссылки для скачивания.",
+    tags=["Файлы"]
 )
-async def list_xml() -> List[str]:
-    return sorted(p.name for p in XML_DIR.glob("*.xml"))
+def list_files(api_key: str = Depends(verify_api_key)):
+    output_dir = Path(app_config.paths.output_folder)
+    files = [f.name for f in output_dir.glob('*.xml')]
+    base_url = str(app_config.api.base_url).rstrip('/')
+    return [FileInfo(name=f, url=f"{base_url}/files/{f}") for f in sorted(files)]
 
 @app.get(
     "/files/download_all",
-    summary="Скачать все счет-фактуры сразу в ZIP",
-    dependencies=[Depends(verify_api_key)]
+    summary="Скачать все XML-файлы в ZIP",
+    description="Создает ZIP-архив со всеми XML-файлами счетов и отправляет его клиенту.",
+    response_class=StreamingResponse,
+    tags=["Файлы"]
 )
-async def download_all():
-    xml_files = list(XML_DIR.glob("*.xml"))
-    if not xml_files:
-        raise HTTPException(status_code=404, detail="No XML files available")
-
-    tmp = tempfile.NamedTemporaryFile(suffix=".zip", delete=False)
-    tmp.close()
-    try:
-        with zipfile.ZipFile(tmp.name, mode="w", compression=zipfile.ZIP_DEFLATED) as z:
-            for p in xml_files:
-                z.write(p, arcname=p.name)
-        return FileResponse(
-            path=tmp.name,
-            media_type="application/zip",
-            filename="all_xml.zip"
-        )
-    except Exception:
-        Path(tmp.name).unlink(missing_ok=True)
-        raise
+def download_all(api_key: str = Depends(verify_api_key)):
+    output_dir = Path(app_config.paths.output_folder)
+    files = list(output_dir.glob('*.xml'))
+    if not files:
+        raise HTTPException(status_code=404, detail="Нет файлов для архивации")
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for file_path in files:
+            zf.write(str(file_path), arcname=file_path.name)
+    buffer.seek(0)
+    return StreamingResponse(
+        buffer,
+        media_type='application/zip',
+        headers={'Content-Disposition': 'attachment; filename="invoices.zip"'}
+    )
 
 @app.get(
-    "/files/{name}",
-    summary="Скачать счет-фактуру по имени",
-    dependencies=[Depends(verify_api_key)]
+    "/files/{filename}",
+    summary="Скачать конкретный XML-файл",
+    description="Отправляет запрошенный XML-файл. При необходимости конвертирует кодировку CP1251 → UTF-8.",
+    response_class=Response,
+    tags=["Файлы"]
 )
-async def get_xml(name: str):
-    file_path = XML_DIR / name
-    if not file_path.exists() or file_path.suffix.lower() != ".xml":
-        raise HTTPException(status_code=404, detail="File not found")
-
+def download_file(
+    filename: str,
+    api_key: str = Depends(verify_api_key)
+):
+    output_dir = Path(app_config.paths.output_folder)
+    file_path = output_dir / filename
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Файл не найден")
     raw = file_path.read_bytes()
-
-    text = raw.decode("cp1251")
-
-    text = re.sub(
-        r'(<\?xml[^>]+encoding=[\'"])[^\'"]+([\'"].*\?>)',
-        r'\1UTF-8\2',
-        text,
-        flags=re.IGNORECASE
-    )
-
-    return Response(
-        content=text.encode("utf-8"),
-        media_type="application/xml; charset=utf-8"
-    )
+    try:
+        text = raw.decode('cp1251')
+        text = text.replace('encoding="Windows-1251"', 'encoding="UTF-8"')
+        return Response(
+            content=text.encode('utf-8'),
+            media_type='application/xml; charset=utf-8',
+            headers={'Content-Disposition': f'attachment; filename="{filename}"'}
+        )
+    except UnicodeDecodeError:
+        return FileResponse(
+            path=str(file_path),
+            media_type='application/xml',
+            filename=filename
+        )
