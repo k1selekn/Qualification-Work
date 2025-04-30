@@ -46,7 +46,9 @@
     <Compile Include="tests\test_core\test_invoice.py" />
     <Compile Include="tests\test_core\test_main.py" />
     <Compile Include="tests\test_db\test_db.py" />
+    <Compile Include="tests\test_db\test_db_module.py" />
     <Compile Include="tests\test_db\test_utils.py" />
+    <Compile Include="tests\test_ecom\test_ecom_module.py" />
     <Compile Include="tests\test_ecom\test_utils.py" />
     <Compile Include="tests\test_xmlgen\test_template.py" />
     <Compile Include="tests\test_xmlgen\tets_generator.py" />
@@ -69,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="pytest.ini" />
+    <Content Include="requirements.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
