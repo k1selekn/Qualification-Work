@@ -54,10 +54,10 @@ def test_get_xml_success(client, setup_xml_dir):
     r = client.get(f"/files/{filename}", headers={"X-API-Key": API_KEY})
     assert r.status_code == 200
     content_type = r.headers.get("content-type", "")
-    assert content_type.startswith("application/xml")
-    text = r.content.decode("utf-8")
-    assert 'encoding="UTF-8"' in text
-    assert '<root attr="тест">привет</root>' in text
+    assert content_type.startswith("application/octet-stream")
+    text = r.content.decode('cp1251')
+    assert xml_decl in text
+    assert body in text
 
 
 def test_get_xml_not_found(client):

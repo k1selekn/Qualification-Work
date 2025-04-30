@@ -1,4 +1,5 @@
 # api.py
+# http://localhost:8000/docs
 from fastapi import FastAPI, HTTPException, Depends, Header, Response
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.openapi.utils import get_openapi
@@ -65,8 +66,8 @@ def download_all(api_key: str = Depends(verify_api_key)):
 @app.get(
     "/files/{filename}",
     summary="Скачать конкретный XML-файл",
-    description="Отправляет запрошенный XML-файл. При необходимости конвертирует кодировку CP1251 → UTF-8.",
-    response_class=Response,
+    description="Отправляет запрошенный XML-файл в оригинальной кодировке CP1251.",
+    response_class=FileResponse,
     tags=["Файлы"]
 )
 def download_file(
@@ -75,20 +76,18 @@ def download_file(
 ):
     output_dir = Path(app_config.paths.output_folder)
     file_path = output_dir / filename
-    if not file_path.exists():
+    if not file_path.exists() or not file_path.is_file():
         raise HTTPException(status_code=404, detail="Файл не найден")
-    raw = file_path.read_bytes()
-    try:
-        text = raw.decode('cp1251')
-        text = text.replace('encoding="Windows-1251"', 'encoding="UTF-8"')
-        return Response(
-            content=text.encode('utf-8'),
-            media_type='application/xml; charset=utf-8',
-            headers={'Content-Disposition': f'attachment; filename="{filename}"'}
-        )
-    except UnicodeDecodeError:
-        return FileResponse(
-            path=str(file_path),
-            media_type='application/xml',
-            filename=filename
-        )
+
+    def iterfile():
+        with open(file_path, "rb") as f:
+            yield from f
+
+    headers = {
+        "Content-Disposition": f'attachment; filename="{filename}"'
+    }
+    return StreamingResponse(
+        iterfile(),
+        media_type="application/octet-stream",
+        headers=headers
+    )

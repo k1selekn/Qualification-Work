@@ -1,4 +1,3 @@
-import os
 import copy
 import xml.etree.ElementTree as ET
 from datetime import datetime
@@ -19,7 +18,8 @@ from db.db import Database
 def generate_invoice_xml(
     invoice_lines: List[Invoice],
     output_dir: Path
-    ) -> Path:
+) -> Path:
+
     use_single = len(invoice_lines) == 1
 
     replace_accounts_from_db(invoice_lines)
@@ -95,14 +95,23 @@ def generate_invoice_xml(
             if val is None:
                 elem.set(key, '')
 
-    output_dir.mkdir(parents=True, exist_ok=True)
     file_path = output_dir / f"{first.document_no}.xml"
-    tree = ET.ElementTree(root)
-    tree.write(
-        str(file_path),
+
+    xml_bytes = ET.tostring(
+        root,
         encoding='windows-1251',
-        xml_declaration=True
+        xml_declaration=True,
+        method='xml'
     )
+    xml_bytes = xml_bytes.replace(
+        b'encoding="windows-1251"',
+        b"encoding='windows-1251'"
+    )
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    with open(file_path, 'wb') as f:
+        f.write(xml_bytes)
+
     return file_path
 
 
