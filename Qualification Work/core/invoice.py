@@ -86,6 +86,16 @@ def parse_txt(
                 if log_file:
                     log_file.write(f"ERR : Line {idx} document type error. Expected: 'DZ', found: {inv.type}\n")
                 continue
+            if inv.sg != 'A':
+                has_errors = True
+                if log_file:
+                    log_file.write(f"ERR : Line {idx} SG error. Expected: 'A', found: {inv.sg}\n")
+                continue
+            if inv.tx not in ('(A', 'DG'):
+                has_errors = True
+                if log_file:
+                    log_file.write(f"ERR : Line {idx} tax code error. Expected: '(A' or 'DG', found: {inv.tx}\n")
+                continue
             if log_file:
                 log_file.write(f"INFO: Line {idx} processed successfully.\n")
             lines.append(inv)

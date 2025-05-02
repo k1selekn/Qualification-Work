@@ -32,16 +32,20 @@ def patch_db_query(monkeypatch):
     return mapping
 
 
-def test_replace_accounts_from_db(patch_db_query):
-    inv1 = Invoice(
+def test_replace_accounts_success(patch_db_query):
+    inv = Invoice(
         assignment='ACC1', document_no='', doc_date=datetime.now(), reference='',
         type='DZ', sg='', amt_loc_cur=0.0, lcurr='', tx='', text='', account='ACC1', line_no=1
     )
-    inv2 = Invoice(
+    replace_accounts_from_db([inv])
+    assert inv.account == 'ERP1'
+
+
+def test_replace_accounts_raises_on_missing(patch_db_query):
+    inv = Invoice(
         assignment='ACC2', document_no='', doc_date=datetime.now(), reference='',
         type='DZ', sg='', amt_loc_cur=0.0, lcurr='', tx='', text='', account='ACC2', line_no=2
     )
-    invoices = [inv1, inv2]
-    replace_accounts_from_db(invoices)
-    assert invoices[0].account == 'ERP1'
-    assert invoices[1].account == 'ACC2'
+    with pytest.raises(ValueError) as excinfo:
+        replace_accounts_from_db([inv])
+    assert "Не удалось заменить счет для assignment 'ACC2'" in str(excinfo.value)

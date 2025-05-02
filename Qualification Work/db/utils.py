@@ -16,8 +16,11 @@ def replace_accounts_from_db(
     with Database() as db:
         for inv in invoice_lines:
             erp = get_erp_agent(db, inv.assignment)
-            if erp:
-                inv.account = erp
+            if erp is None:
+                continue
+            if erp == "":
+                raise ValueError(f"Не удалось заменить счет для assignment '{inv.assignment}'. Необходимо заполнить данные по агенту.")
+            inv.account = erp
 
 def get_currencyName_from_db(
     db: Database,

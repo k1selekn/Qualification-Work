@@ -29,7 +29,7 @@ def generate_invoice_xml(
     now = datetime.now()
     doc = root.find('Документ')
     doc.set('ВремИнфПр', now.strftime('%H.%M.%S'))
-    doc.set('ДатаИнфПр', now.strftime('%d.%m.%y'))
+    doc.set('ДатаИнфПр', now.strftime('%d.%m.%Y'))
 
     first = invoice_lines[0]
     scf = doc.find('СвСчФакт')
@@ -50,7 +50,7 @@ def generate_invoice_xml(
         buyer = scf.find('.//СвПокуп/ИдСв/СвЮЛУч')
         buyer.set('НаимОрг', ecom.full_name)
         buyer.set('ИННЮЛ', ecom.stcd1)
-        buyer.set('КПП', ecom.stcd2)
+        buyer.set('КПП', ecom.stcd3)
         addr = scf.find('.//СвПокуп/Адрес/АдрИнф')
         addr.set('АдрТекст', ecom.address_text)
 
@@ -70,11 +70,17 @@ def generate_invoice_xml(
             item.set('НаимТов', inv.text)
 
             tax_val = get_taxValue_from_db(db, inv.tx) or 0.0
-            nal_rate = tax_val / (100 + tax_val) if tax_val else 0.0
-            item.set('НалСт', f"{nal_rate:.6f}")
+            if tax_val:
+                numerator = int(tax_val)
+                denominator = int(100 + tax_val)
+                nal_rate_str = f"{numerator}/{denominator}"
+            else:
+                nal_rate_str = "0/100"
+            item.set('НалСт', nal_rate_str)
             item.set('СтТовУчНал', f"{amount:.2f}")
 
-            sum_tax = amount * nal_rate
+            decimal_rate = tax_val / (100 + tax_val) if tax_val else 0.0
+            sum_tax = amount * decimal_rate
             node_sum = item.find('СумНал/СумНал')
             if node_sum is not None:
                 node_sum.text = f"{sum_tax:.2f}"

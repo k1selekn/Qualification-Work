@@ -6,8 +6,8 @@ from ecom.db import ReadOnlyDatabase
 @dataclass
 class EcomData:
     stcd1: str            # ИНН (STCD1)
-    stcd2: str            # КПП (STCD2)
-    stcd3: str            # Доп. код (STCD3)
+    stcd2: str            # ОКПО (STCD2)
+    stcd3: str            # КПП (STCD3)
     name1: str            # Основное наименование (NAME1)
     name2: Optional[str]  # Доп. наименование (NAME2)
     name3: Optional[str]  # Доп. наименование (NAME3)
