@@ -11,7 +11,6 @@ import zipfile
 from pathlib import Path
 from config import app_config
 
-
 app = FastAPI(
     title="Сервис XML счетов",
     description="API для управления и получения сгенерированных XML счетов-фактур.",
