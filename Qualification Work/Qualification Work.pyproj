@@ -28,7 +28,6 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="api\admin.py" />
     <Compile Include="api\api.py" />
     <Compile Include="api\__init__.py" />
     <Compile Include="config.py" />
@@ -59,9 +58,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="api\" />
-    <Folder Include="templates\" />
-    <Folder Include="templates\admin\" />
-    <Folder Include="api\__pycache__\" />
     <Folder Include="core\" />
     <Folder Include="db\" />
     <Folder Include="ecom\" />
@@ -75,10 +71,6 @@
     <Folder Include="xmlgen\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="templates\admin\index.html" />
-    <Content Include="templates\admin\logs.html" />
-    <Content Include="api\__pycache__\main.cpython-39.pyc" />
-    <Content Include="api\__pycache__\__init__.cpython-39.pyc" />
     <Content Include="pytest.ini" />
     <Content Include="requirements.txt" />
   </ItemGroup>

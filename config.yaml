@@ -29,7 +29,3 @@ paths:
 api:
   base_url: "http://localhost:8000"
   api_key: "kiselek"
-
-admin:
-  username: "admin"
-  password: "admin"

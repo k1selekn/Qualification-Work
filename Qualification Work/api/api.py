@@ -1,6 +1,6 @@
 # api.py
 # http://localhost:8000/docs
-from fastapi import FastAPI, HTTPException, Depends, Header, Response, APIRouter
+from fastapi import FastAPI, HTTPException, Depends, Header, Response
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.openapi.utils import get_openapi
 from pydantic import BaseModel, Field

@@ -56,15 +56,10 @@ class APIConfig(BaseModel):
     base_url: HttpUrl = Field(..., description="Базовый URL сервиса API")
     api_key: str    = Field(..., description="Секретный ключ для доступа к API")
 
-class AdminConfig(BaseModel):
-    username: str = Field(..., description="Имя пользователя для доступа к админке")
-    password: str = Field(..., description="Пароль для доступа к админке")
-
 class AppConfig(BaseModel):
     db: DBConfig
     ecom_db: DBConfig
     paths: PathsConfig
     api: APIConfig
-    admin: AdminConfig
 
 app_config = load_config()
