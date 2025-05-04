@@ -28,10 +28,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="api\admin.py" />
-    <Compile Include="api\auth.py" />
     <Compile Include="api\main.py" />
-    <Compile Include="api\utils.py" />
     <Compile Include="api\__init__.py" />
     <Compile Include="config.py" />
     <Compile Include="core\invoice.py" />
@@ -65,10 +62,6 @@
     <Folder Include="core\" />
     <Folder Include="db\" />
     <Folder Include="ecom\" />
-    <Folder Include="static\" />
-    <Folder Include="static\admin\" />
-    <Folder Include="templates\" />
-    <Folder Include="templates\admin\" />
     <Folder Include="tests\" />
     <Folder Include="scripts\" />
     <Folder Include="tests\test_api\" />
@@ -83,9 +76,6 @@
     <Content Include="api\__pycache__\__init__.cpython-39.pyc" />
     <Content Include="pytest.ini" />
     <Content Include="requirements.txt" />
-    <Content Include="static\admin\admin.css" />
-    <Content Include="static\admin\admin.js" />
-    <Content Include="templates\admin\dashboard.html" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

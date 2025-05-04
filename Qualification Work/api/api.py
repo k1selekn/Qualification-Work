@@ -11,16 +11,12 @@ import zipfile
 from pathlib import Path
 from fastapi.staticfiles import StaticFiles
 from config import app_config
-from .admin import router as admin_router
 
 app = FastAPI(
     title="Сервис XML счетов",
     description="API для управления и получения сгенерированных XML счетов-фактур.",
     version="1.0.0",
 )
-
-app.mount("/static", StaticFiles(directory="static"), name="static")
-app.include_router(admin_router, prefix="/admin")
 
 def verify_api_key(x_api_key: str = Header(..., description="Ключ API для аутентификации")):
     if x_api_key != app_config.api.api_key:
