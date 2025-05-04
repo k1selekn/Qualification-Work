@@ -31,7 +31,6 @@ def patch_db_query(monkeypatch):
     monkeypatch.setattr('db.utils.Database', lambda *args, **kwargs: dummy_db)
     return mapping
 
-
 def test_replace_accounts_success(patch_db_query):
     inv = Invoice(
         assignment='ACC1', document_no='', doc_date=datetime.now(), reference='',
@@ -40,12 +39,10 @@ def test_replace_accounts_success(patch_db_query):
     replace_accounts_from_db([inv])
     assert inv.account == 'ERP1'
 
-
-def test_replace_accounts_raises_on_missing(patch_db_query):
+def test_replace_accounts_skips_on_missing(patch_db_query):
     inv = Invoice(
         assignment='ACC2', document_no='', doc_date=datetime.now(), reference='',
         type='DZ', sg='', amt_loc_cur=0.0, lcurr='', tx='', text='', account='ACC2', line_no=2
     )
-    with pytest.raises(ValueError) as excinfo:
-        replace_accounts_from_db([inv])
-    assert "Не удалось заменить счет для assignment 'ACC2'" in str(excinfo.value)
+    replace_accounts_from_db([inv])
+    assert inv.account == 'ACC2'

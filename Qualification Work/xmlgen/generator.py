@@ -9,6 +9,7 @@ from xmlgen.template import get_template_root
 from ecom.utils import fetch_ecom_data
 from db.utils import (
     replace_accounts_from_db,
+    get_currencyCode_from_db,
     get_currencyName_from_db,
     get_taxValue_from_db
 )
@@ -27,14 +28,18 @@ def generate_invoice_xml(
     root = get_template_root(single=use_single)
 
     now = datetime.now()
+    old_file_id = root.get('ИдФайл', '')
+    today_str = now.strftime('%Y%m%d')
+    new_file_id = old_file_id.replace('Текущая дата(ггггммдд)', today_str)
+    root.set('ИдФайл', new_file_id)
     doc = root.find('Документ')
     doc.set('ВремИнфПр', now.strftime('%H.%M.%S'))
     doc.set('ДатаИнфПр', now.strftime('%d.%m.%Y'))
 
     first = invoice_lines[0]
     scf = doc.find('СвСчФакт')
-    scf.set('НомерСчФ', first.document_no)
-    scf.set('ДатаСчФ', first.doc_date.strftime('%d.%m.%Y'))
+    scf.set('НомерДок', first.document_no)
+    scf.set('ДатаДок', first.doc_date.strftime('%d.%m.%Y'))
 
     prd = scf.find('СвПРД')
     prd.set('НомерПРД', first.reference)
@@ -42,7 +47,9 @@ def generate_invoice_xml(
 
     with Database() as db:
         curr_name = get_currencyName_from_db(db, first.lcurr) or first.lcurr
-    elt_curr = scf.find('ДопСвФХЖ1')
+        curr_code = get_currencyCode_from_db(db, first.lcurr) or first.lcurr
+    elt_curr = scf.find('ДенИзм')
+    elt_curr.set('КодОКВ', curr_code)
     elt_curr.set('НаимОКВ', curr_name)
 
     ecom = fetch_ecom_data(first.account)

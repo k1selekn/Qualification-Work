@@ -33,6 +33,17 @@ def get_currencyName_from_db(
     row = cursor.fetchone()
     return row[0] if row else None
 
+def get_currencyCode_from_db(
+    db: Database,
+    codeOKV: str
+    ) -> Optional[str]:
+    cursor = db.execute(
+        "SELECT CodeOKV FROM Currency WHERE CurrencyCode = ?",
+        (codeOKV,)
+    )
+    row = cursor.fetchone()
+    return row[0] if row else None
+
 def get_taxValue_from_db(
     db: Database,
     tax_code: str
