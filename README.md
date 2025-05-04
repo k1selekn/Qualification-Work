@@ -38,7 +38,7 @@ Qualification-Work/           # Корень репозитория
 ├── scripts/                  # Утилиты запуска
 │   ├── runner.py             # Одноразовый запуск обработки
 │   └── scheduler.py          # Планировщик (каждые 10 минут)
-├── api/                      # FastAPI приложение (эндпоинты, авторизация)
+├── api.py
 ├── tests/                    # Модульные тесты
 │   ├── test_core             # Тесты для core-модулей
 │   ├── test_db               # Заготовки тестов для db
@@ -82,7 +82,7 @@ python scripts/scheduler.py
 
 #### REST API (FastAPI)
 ```bash
-uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
+uvicorn api:app --reload --host 0.0.0.0 --port 8000
 ```
 - Документация Swagger: http://localhost:8000/docs
 
