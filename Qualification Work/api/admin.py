@@ -10,7 +10,7 @@ from scripts.runner import process_invoices
 
 router = APIRouter(prefix="/admin", dependencies=[Depends(get_current_user)], tags=["admin"])
 templates = Jinja2Templates(directory="templates")
-path = os.path.join(app_config.paths.logs_folder, "scheduler.txt")
+path = os.path.join(app_config.paths.logs_folder, "scheduler.log")
 
 @router.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request):
@@ -20,7 +20,7 @@ async def dashboard(request: Request):
 async def scheduler_logs():
     path = get_scheduler_log_path()
     if not os.path.exists(path):
-        raise HTTPException(404, "scheduler.txt не найден")
+        raise HTTPException(404, "scheduler.log не найден")
     return {"lines": tail(path)}
 
 @router.get("/logs/file/{filename}", response_class=JSONResponse)

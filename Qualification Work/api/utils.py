@@ -23,7 +23,7 @@ def tail(filepath: str, n: int = 200) -> list[str]:
     return lines[::-1]
 
 def get_scheduler_log_path() -> str:
-    return os.path.join(app_config.paths.logs_folder, "scheduler.txt")
+    return os.path.join(app_config.paths.logs_folder, "scheduler.log")
 
 def get_file_log_path(filename: str) -> str:
     return os.path.join(app_config.paths.logs_folder, f"{filename}.txt")

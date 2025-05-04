@@ -6,11 +6,19 @@ from config import load_config
 
 cfg = load_config()
 
+def process_invoices(input_path, output_dir):
+    input_path = Path(input_path)
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    one_shot_mode(input_path, output_dir)
+
+
 if __name__ == "__main__":
     if len(sys.argv) == 3:
-        input_path  = Path(sys.argv[1])
-        output_dir  = Path(sys.argv[2])
+        in_path = sys.argv[1]
+        out_dir = sys.argv[2]
     else:
-        input_path  = Path(cfg.paths.input_folder)
-        output_dir  = Path(cfg.paths.output_folder)
-    output_dir.mkdir(parents=True, exist_ok=True)
+        in_path = cfg.paths.input_dir  
+        out_dir = cfg.paths.output_dir   
+
+    process_invoices(in_path, out_dir)
