@@ -1,6 +1,6 @@
 # api.py
 # http://localhost:8000/docs
-from fastapi import FastAPI, HTTPException, Depends, Header, Response
+from fastapi import FastAPI, HTTPException, Depends, Header, Response, APIRouter
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.openapi.utils import get_openapi
 from pydantic import BaseModel, Field
@@ -9,13 +9,16 @@ import os
 import io
 import zipfile
 from pathlib import Path
-from fastapi.staticfiles import StaticFiles
 from config import app_config
+
 
 app = FastAPI(
     title="Сервис XML счетов",
     description="API для управления и получения сгенерированных XML счетов-фактур.",
     version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
 )
 
 def verify_api_key(x_api_key: str = Header(..., description="Ключ API для аутентификации")):
