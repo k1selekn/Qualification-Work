@@ -5,7 +5,7 @@ import pytest
 from pathlib import Path
 from fastapi.testclient import TestClient
 
-import api
+import server as api
 from config import app_config
 
 API_KEY = app_config.api.api_key
@@ -15,7 +15,7 @@ def setup_xml_dir(tmp_path):
     xml_dir = tmp_path / "out"
     xml_dir.mkdir(parents=True)
     import config
-    import api
+    import server as api
     config.app_config.paths.output_folder = str(xml_dir)
     api.app_config.paths.output_folder = str(xml_dir)
     return xml_dir
