@@ -12,8 +12,8 @@ import os
 from fastapi.openapi.utils import get_openapi
 
 app = FastAPI(
-    title="Сервис XML счетов",
-    description="API для управления и получения сгенерированных XML-фактур.",
+    title="Сервис счетов-фактур",
+    description="API для управления и получения сгенерированных счетов-фактур.",
     version="1.0.0",
 )
 
@@ -31,7 +31,7 @@ def _validate_api_key(x_api_key: str = Header(..., alias="x-api-key", descriptio
 @app.get(
     "/files/",
     response_model=List[FileInfo],
-    summary="Получить список XML-файлов счетов",
+    summary="Получить список сгенерированых счетов-фактур",
     tags=["Файлы"],
 )
 def list_files(x_api_key: str = Header(..., alias="x-api-key")):
@@ -43,7 +43,7 @@ def list_files(x_api_key: str = Header(..., alias="x-api-key")):
 
 @app.get(
     "/files/download_all",
-    summary="Скачать все XML-файлы в ZIP",
+    summary="Скачать все счет-фактуры в ZIP",
     tags=["Файлы"],
     response_class=StreamingResponse
 )
@@ -66,7 +66,7 @@ def download_all(x_api_key: str = Header(..., alias="x-api-key")):
 
 @app.get(
     "/files/{filename}",
-    summary="Скачать конкретный XML-файл",
+    summary="Скачать конкретную счет-фактуру",
     tags=["Файлы"],
     response_class=FileResponse
 )

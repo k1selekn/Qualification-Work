@@ -6,7 +6,7 @@ from pathlib import Path
 import secrets
 
 from config import app_config
-from scripts.scheduler import job
+from scripts.scheduler import main
 
 router = APIRouter(prefix="/admin", include_in_schema=False)
 security = HTTPBasic()
@@ -38,7 +38,7 @@ def admin_dashboard(request: Request, user: str = Depends(get_current_admin)):
 
 @router.post("/run", response_class=RedirectResponse)
 def run_scheduler(user: str = Depends(get_current_admin)):
-    job()
+    main()
     return RedirectResponse(url="/admin/dashboard", status_code=303)
 
 @router.get("/files_in", response_class=HTMLResponse)
