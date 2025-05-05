@@ -84,7 +84,14 @@ python scripts/scheduler.py
 ```bash
 uvicorn api:app --reload --host 0.0.0.0 --port 8000
 ```
-- Документация Swagger: http://localhost:8000/docs
+- Для Swagger-UI:
+http://127.0.0.1:8000/docs
+
+- Для ReDoc:
+http://127.0.0.1:8000/redoc
+
+- Чистый OpenAPI-спецификатор (JSON):
+http://127.0.0.1:8000/openapi.json
 
 ### Конфигурация
 
