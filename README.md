@@ -39,6 +39,7 @@ Qualification-Work/           # Корень репозитория
 │   ├── runner.py             # Одноразовый запуск обработки
 │   └── scheduler.py          # Планировщик (каждые 10 минут)
 ├── server.py                 # FastAPI
+├── admin.py                  # Admin panel
 ├── tests/                    # Модульные тесты
 │   ├── test_core             # Тесты для core-модулей
 │   ├── test_db               # Заготовки тестов для db
