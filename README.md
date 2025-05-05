@@ -38,7 +38,7 @@ Qualification-Work/           # Корень репозитория
 ├── scripts/                  # Утилиты запуска
 │   ├── runner.py             # Одноразовый запуск обработки
 │   └── scheduler.py          # Планировщик (каждые 10 минут)
-├── api.py
+├── server.py                 # FastAPI
 ├── tests/                    # Модульные тесты
 │   ├── test_core             # Тесты для core-модулей
 │   ├── test_db               # Заготовки тестов для db
@@ -82,7 +82,7 @@ python scripts/scheduler.py
 
 #### REST API (FastAPI)
 ```bash
-uvicorn api:app --reload --host 0.0.0.0 --port 8000
+py -m uvicorn server:app --reload --host 0.0.0.0 --port 8000
 ```
 - Для Swagger-UI:
 http://127.0.0.1:8000/docs
@@ -93,23 +93,44 @@ http://127.0.0.1:8000/redoc
 - Чистый OpenAPI-спецификатор (JSON):
 http://127.0.0.1:8000/openapi.json
 
+- Панель администратора:
+http://127.0.0.1:8000/admin/dashboard
+
 ### Конфигурация
 
 Все параметры (строки подключения, пути) описаны в `config.yaml`. Пример структуры:
 ```yaml
+# config.yaml
 db:
-  server: "SERVER_NAME"
-  database: "ERP_Agent"
-  trusted_connection: true
+  server: "kiselek"
+  database: "FinalQW"
+  driver: "ODBC Driver 18 for SQL Server"
+  instance: ""
+  port: 1433
+  trusted: true
+  uid: ""
+  pwd: ""
+  autocommit: true
 
- ecom:
-  server: "ECOM_SERVER"
-  database: "ecom_db"
+ecom_db:
+  server: "kiselek"
+  database: "ECOM"
+  driver: "ODBC Driver 18 for SQL Server"
+  instance: ""
+  port: 1433
+  trusted: true
+  uid: ""
+  pwd: ""
+  autocommit: true
 
- paths:
-  input_dir: "/data/invoices"
-  output_dir: "/data/xmls"
-  log_file: "/var/log/qualification-work.log"
+paths:
+  input_folder: "data/in"
+  output_folder: "data/out"
+  logs_folder: "logs"
+
+api:
+  base_url: "http://localhost:8000"
+  api_key: "kiselek"
 ```
 
 ### Тестирование
