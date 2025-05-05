@@ -17,6 +17,9 @@ app = FastAPI(
     version="1.0.0",
 )
 
+from admin import router as admin_router
+app.include_router(admin_router)
+
 class FileInfo(BaseModel):
     name: str = Field(..., description="Имя XML-файла счета")
     url:  str = Field(..., description="URL для скачивания XML-файла")

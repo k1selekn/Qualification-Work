@@ -22,10 +22,14 @@ ecom_db:
   autocommit: true
 
 paths:
-  input_folder: "data/in"
-  output_folder: "data/out"
-  logs_folder: "logs"
+  input_folder: "data/in" # папка с txt файлами, какие файлы там необработанные (.txt), обработанные (.bak), логи по каждому файлу (.log)
+  output_folder: "data/out" # папка с XML файлами (.xml)
+  logs_folder: "logs" # папка с логами (scheduler.log)
 
 api:
   base_url: "http://localhost:8000"
   api_key: "kiselek"
+
+admin:
+  login: "admin"
+  password: "admin"
