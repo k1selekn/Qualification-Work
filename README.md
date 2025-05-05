@@ -82,7 +82,7 @@ python scripts/scheduler.py
 
 #### REST API (FastAPI)
 ```bash
-uvicorn server:app --reload --host 0.0.0.0 --port 8000
+py -m uvicorn server:app --reload --host 0.0.0.0 --port 8000
 ```
 - Для Swagger-UI:
 http://127.0.0.1:8000/docs
