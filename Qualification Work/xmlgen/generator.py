@@ -117,8 +117,8 @@ def generate_invoice_xml(
         method='xml'
     )
     xml_bytes = xml_bytes.replace(
-        b'encoding="windows-1251"',
-        b"encoding='windows-1251'"
+        b"<?xml version='1.0' encoding='windows-1251'?>",
+        b"<?xml version=\"1.0\" encoding=\"windows-1251\"?>"
     )
 
     output_dir.mkdir(parents=True, exist_ok=True)
