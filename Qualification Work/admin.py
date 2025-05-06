@@ -6,7 +6,7 @@ from pathlib import Path
 import secrets
 
 from config import app_config
-from scripts.scheduler import main
+from scripts.scheduler import job
 
 router = APIRouter(prefix="/admin", include_in_schema=False)
 security = HTTPBasic()
@@ -38,7 +38,7 @@ def admin_dashboard(request: Request, user: str = Depends(get_current_admin)):
 
 @router.post("/run", response_class=RedirectResponse)
 def run_scheduler(user: str = Depends(get_current_admin)):
-    main()
+    job()
     return RedirectResponse(url="/admin/dashboard", status_code=303)
 
 @router.get("/files_in", response_class=HTMLResponse)
@@ -104,4 +104,27 @@ def download_log(logname: str, user: str = Depends(get_current_admin)):
         path=str(path),
         media_type="text/plain",
         filename=logname
+    )
+
+@router.get("/files_out", response_class=HTMLResponse)
+def list_output_files(request: Request, user: str = Depends(get_current_admin)):
+    out_dir = Path(app_config.paths.output_folder)
+    files = sorted(
+        p.name for p in out_dir.iterdir()
+        if p.is_file() and not p.name.startswith('.')
+    )
+    return templates.TemplateResponse(
+        "admin_files_out.html",
+        {"request": request, "files": files}
+    )
+
+@router.get("/files_out/{fname}", response_class=FileResponse)
+def view_output_file(fname: str, user: str = Depends(get_current_admin)):
+    path = Path(app_config.paths.output_folder) / fname
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Файл не найден")
+    return FileResponse(
+        path=str(path),
+        media_type="application/xml",
+        filename=fname
     )

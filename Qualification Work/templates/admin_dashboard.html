@@ -15,16 +15,19 @@
     <div class="container">
         <h1 class="mb-4">Панель администратора</h1>
         <div class="row gy-3">
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-3">
                 <form action="/admin/run" method="post">
                     <button class="btn btn-success w-100" type="submit">Запустить Scheduler</button>
                 </form>
             </div>
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-3">
                 <a href="/admin/files_in" class="btn btn-secondary w-100">Файлы из SAP-системы</a>
             </div>
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-3">
                 <a href="/admin/logs" class="btn btn-secondary w-100">Логи шедулера</a>
+            </div>
+            <div class="col-12 col-md-3">
+                <a href="/admin/files_out" class="btn btn-secondary w-100">Исходящие XML-файлы</a>
             </div>
         </div>
     </div>
