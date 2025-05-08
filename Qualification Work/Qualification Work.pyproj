@@ -75,8 +75,7 @@
     <Content Include="pytest.ini" />
     <Content Include="requirements.txt" />
     <Content Include="templates\admin_dashboard.html" />
-    <Content Include="templates\admin_files_in.html" />
-    <Content Include="templates\admin_files_out.html" />
+    <Content Include="templates\admin_file_view.html" />
     <Content Include="templates\admin_logs.html" />
     <Content Include="templates\admin_log_view.html" />
   </ItemGroup>
