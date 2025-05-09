@@ -98,6 +98,9 @@
                     <div class="card-header">
                         <strong>Счет-фактуры для Контура.Диадок</strong>
                         <a href="/admin/invoices/download_all" class="btn btn-sm btn-info float-end">Скачать все (ZIP)</a>
+                        <form action="/admin/invoices/delete_all" method="post" class="d-inline float-end me-2">
+                            <button type="submit" class="btn btn-sm btn-danger">Удалить все</button>
+                        </form>
                     </div>
                     <div class="card-body panel-body-scroll">
                         <!-- Search -->
@@ -137,13 +140,22 @@
                         <ul class="list-group list-group-flush">
                             {% for f in inv_files %}
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <strong>{{ f.name }}</strong><br>
-                                    <small>{{ f.date.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                                <div class="d-flex align-items-center">
+                                    <input type="checkbox"
+                                           class="me-2"
+                                           onchange="toggleSent('{{ f.name }}', this.checked)"
+                                           {% if sent_status.get(f.name) %}checked{% endif %}>
+                                    <div>
+                                        <strong>{{ f.name }}</strong><br>
+                                        <small>{{ f.date.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                                    </div>
                                 </div>
                                 <div>
                                     <a href="/admin/files_out/{{ f.name }}/view" class="btn btn-sm btn-info me-1">Просмотр</a>
                                     <a href="/admin/files_out/{{ f.name }}" class="btn btn-sm btn-secondary">Скачать</a>
+                                    <form action="/admin/invoices/delete/{{ f.name }}" method="post" class="d-inline ms-2">
+                                        <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                                    </form>
                                 </div>
                             </li>
                             {% else %}
@@ -157,7 +169,29 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const alertBox = document.getElementById('alert-run'); if (alertBox) { setTimeout(() => alertBox.classList.add('d-none'), 3000); }
+        const alertBox = document.getElementById('alert-run');
+        if (alertBox) {
+            setTimeout(() => {
+                alertBox.classList.add('d-none');
+                const url = new URL(window.location.href);
+                url.searchParams.delete('msg');
+                window.location.href = url.toString();
+            }, 3000);
+        }
+
+        async function toggleSent(name, sent) {
+            console.log('toggleSent called for', name, sent);
+            try {
+                await fetch('/admin/invoices/toggle_sent', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, sent })
+                });
+            } catch (e) {
+                console.error(e);
+                alert('Не удалось сохранить статус отправки');
+            }
+        }
     </script>
 </body>
 </html>

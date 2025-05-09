@@ -61,6 +61,7 @@
     <Folder Include="core\" />
     <Folder Include="db\" />
     <Folder Include="ecom\" />
+    <Folder Include="status\" />
     <Folder Include="templates\" />
     <Folder Include="tests\" />
     <Folder Include="scripts\" />
@@ -74,6 +75,9 @@
   <ItemGroup>
     <Content Include="pytest.ini" />
     <Content Include="requirements.txt" />
+    <Content Include="status\sent_status.json">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="templates\admin_dashboard.html" />
     <Content Include="templates\admin_file_view.html" />
     <Content Include="templates\admin_logs.html" />
